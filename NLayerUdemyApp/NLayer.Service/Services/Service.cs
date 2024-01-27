@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using NLayer.Core.Repositories;
 using NLayer.Core.Service;
 using NLayer.Core.UnitOfWork;
+using NLayer.Service.Exceptions;
 
 namespace NLayer.Service.Services;
 
@@ -17,9 +18,13 @@ public class Service<T> : IService<T> where T : class
         _unitOfWork = unitOfWork;
     }
 
-    public Task<T> GetByIdAsync(int id)
+    public async Task<T> GetByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        var hasProduct = await _repository.GetByIdAsync(id);
+
+        if (hasProduct == null) throw new ClientSideException($"{typeof(T).Name}({id}) not found");
+
+        return hasProduct;
     }
 
     public async Task<bool> AnyAsync(Expression<Func<T, bool>> expression)
