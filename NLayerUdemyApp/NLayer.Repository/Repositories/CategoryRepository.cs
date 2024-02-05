@@ -12,6 +12,6 @@ public class CategoryRepository : GenericRepository<Category> , ICategoryReposit
 
     public async Task<Category> GetSingleCategoryByIdWithProductAsync(int categoryId)
     {
-        return await _context.Categories.Include(x=> x.Products).Where(x => x.Id == categoryId).SingleOrDefaultAsync();
+        return await Context.Categories.Include(x=> x.Products).Where(x => x.Id == categoryId).SingleOrDefaultAsync();
     }
 }

@@ -11,6 +11,6 @@ public class ProductRepository : GenericRepository<Product>, IProductRepository
 
     public async Task<List<Product>> GetProductsWithCategory()
     {
-        return await _context.Products.Include(x => x.Category).ToListAsync();
+        return await Context.Products.Include(x => x.Category).ToListAsync();
     }
 }
