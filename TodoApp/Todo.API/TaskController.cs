@@ -1,5 +1,7 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Todo.Core;
+using Todo.Core.DTOs;
 using Todo.Core.Services;
 using Task = Todo.Core.Entities.Task;
 
@@ -8,10 +10,12 @@ namespace Todo.API;
 public class TaskController : CustomBaseController
 {
     private readonly IGenericService<Task> _service;
+    private readonly IMapper _mapper;
 
-    public TaskController(IGenericService<Task> service)
+    public TaskController(IGenericService<Task> service, IMapper mapper)
     {
         _service = service;
+        _mapper = mapper;
     }
 
     [HttpGet]
@@ -21,30 +25,34 @@ public class TaskController : CustomBaseController
         return CreateActionResult(CustomResponseDto<List<Task>>.Success(200, tasks));
     }
 
-    /*
-    // GET api/<TaskController>/5
     [HttpGet("{id}")]
-    public string Get(int id)
+    public async Task<IActionResult> Get(int id)
     {
-        return "value";
+        var task = await _service.GetByIdAsync(id);
+        return CreateActionResult(CustomResponseDto<Task>.Success(200, task));
     }
 
-    // POST api/<TaskController>
     [HttpPost]
-    public void Post([FromBody] string value)
+    public async Task<IActionResult> Post(TaskDto taskDto)
     {
+        var task = _mapper.Map<Task>(taskDto);
+        await _service.AddAsync(task);
+        return CreateActionResult(CustomResponseDto<Task>.Success(201, task));
     }
 
-    // PUT api/<TaskController>/5
-    [HttpPut("{id}")]
-    public void Put(int id, [FromBody] string value)
+    [HttpPut]
+    public async Task<IActionResult> Put(Task task)
     {
+        await _service.UpdateAsync(task);
+        return CreateActionResult(CustomResponseDto<Task>.Success(204));
     }
 
-    // DELETE api/<TaskController>/5
     [HttpDelete("{id}")]
-    public void Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
+        var task = await _service.GetByIdAsync(id);
+        await _service.DeleteAsync(task);
+        return CreateActionResult(CustomResponseDto<Task>.Success(204));
     }
-    */
+    
 }
